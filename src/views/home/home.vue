@@ -1,32 +1,74 @@
 <template>
   <div class="home">
-    <home-nav-bar/>
+    <home-nav-bar />
     <div class="banner">
       <img src="@/assets/img/home/banner.webp" alt="">
     </div>
     <home-search-box />
+    <home-categories />
+    <home-content />
+    <div class="search-bar" v-if="isShowSearchBar">
+      <search-bar />
+    </div>
   </div>
-
 </template>
 
 <script setup>
 import HomeNavBar from './cpns/home-nav-bar.vue'
 import HomeSearchBox from './cpns/home-search-box.vue'
 import useHomeStore from '@/store/modules/home';
+import HomeCategories from './cpns/home-categories.vue'
+import homeContent from './cpns/home-content.vue';
+import useScroll from '@/utils/useScroll';
+import { watch, computed } from 'vue';
+import SearchBar from '@/components/search-bar/search-bar.vue';
 
 // 发送网络请求
-// 热门建议
 const homeStore = useHomeStore()
-homeStore.fetchHotSuggestsData()
+homeStore.fetchHotSuggestsData()// 热门建议
+homeStore.fetchCategoriesData() // 热门类别
+homeStore.fetchHouseListData() // 房屋列表
+
+// 写法一
+// useScroll(()=>{
+//   homeStore.fetchHouseListData() // 房屋列表
+// })
+
+// 写法二
+const { isReachBottom, scrollTop } = useScroll()
+watch(isReachBottom, (newValue) => {
+  if (newValue) {
+    homeStore.fetchHouseListData().then(() => {
+      isReachBottom.value = false
+    })
+  }
+})
+
+// 搜索框显示的控制
+const isShowSearchBar = computed(() => {
+  return scrollTop.value >= 360
+})
 
 </script>
 
 <style lang="less" scoped>
-.banner{
-  img{
-  width: 100%;
-}
+.home {
+  padding-bottom: 60px;
 }
 
-
+.banner {
+  img {
+    width: 100%;
+  }
+}
+.search-bar{
+  position: fixed;
+  z-index: 9;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45px;
+  padding: 16px 16px 10px;
+  background-color: #fff;
+}
 </style>

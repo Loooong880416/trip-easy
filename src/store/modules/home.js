@@ -1,4 +1,4 @@
-import { getHomeHotSuggests } from "@/service";
+import { getHomeHotSuggests, getHomeCategories, getHomeHouseList } from "@/service";
 import { defineStore } from "pinia";
 
 const useHomeStore = defineStore("home", {
@@ -6,6 +6,8 @@ const useHomeStore = defineStore("home", {
     // 定义变量
     hotSuggests: [], //热门建议
     categories:[], 
+    houseList:[],//首页内容数据
+    currentPage:1,//当前页数
   }),
   // 定义操作
   actions: {
@@ -13,6 +15,14 @@ const useHomeStore = defineStore("home", {
     async fetchHotSuggestsData() {
       const res = await getHomeHotSuggests()
       this.hotSuggests = res.data
+    },
+    async fetchCategoriesData() {
+      const res = await getHomeCategories()
+      this.categories = res.data
+    },
+    async fetchHouseListData() {
+      const res = await getHomeHouseList(this.currentPage)
+      this.houseList.push(...res.data) 
     }
   },
 })
