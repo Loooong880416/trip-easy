@@ -47,8 +47,6 @@ const cityStore = useCityStore()
 cityStore.fetchAllCitiesData()
 const { allCities } = storeToRefs(cityStore)
 
-// 获取选中标签后的数据
-const currentGroup = computed(() => allCities.value[tabActive.value])
 
 </script>
 
