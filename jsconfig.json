@@ -1,8 +1,18 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "jsx": "preserve",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "lib":[
+      "ESNext",
+      "Dom",
+      "DOM.Iterable",
+      "ScriptHost"
+    ]
   },
   "exclude": ["node_modules", "dist"]
 }
