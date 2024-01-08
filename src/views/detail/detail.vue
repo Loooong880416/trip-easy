@@ -9,6 +9,7 @@
       <detail-landlord name="房东" :ref="getSectionRef" :landlord="mainPart.dynamicModule.landlordModule" />
       <detail-comment name="评论" :ref="getSectionRef" :comment="mainPart.dynamicModule.commentModule"/>
       <detail-notice name="须知" :ref="getSectionRef" :order-rules="mainPart.dynamicModule.rulesModule.orderRules"/>
+      <detail-map name="周边" :ref="getSectionRef" :position="mainPart.dynamicModule.positionModule"/>
     </div>
   </div>
 </template>
@@ -25,6 +26,7 @@ import DetailFacility from './cpns/detail_03_facility.vue'
 import DetailLandlord from "./cpns/detail_04_landlord.vue"
 import DetailComment from "./cpns/detail_05_comment.vue"
 import DetailNotice from "./cpns/detail_06_notice.vue"
+import DetailMap from "./cpns/detail_07_map.vue"
 
 const router = useRouter()
 const route = useRoute()
