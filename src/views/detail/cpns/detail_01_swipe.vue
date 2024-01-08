@@ -37,6 +37,7 @@ for (const item of props.swipeData) {
   let valueArray = swipeGroup[item.enumPictureCategory]
   if (!valueArray) {
     valueArray = []
+    console.log('a:',swipeGroup[item.enumPictureCategory])
     swipeGroup[item.enumPictureCategory] = valueArray
   }
   valueArray.push(item)
