@@ -2,9 +2,9 @@
   <div class="detail top-page" ref="detailRef">
     <tab-control v-if="showTabControl" class="tabs" :titles="names" @tabItemClick="tabClick" />
     <van-nav-bar title="房屋详情" left-text="旅途" left-arrow @click-left="$router.back()" />
-    <div class="main" v-if="mainPart">
+    <div class="main" v-if="mainPart" v-memo="[mainPart]">
       <detail-swipe :swipe-data="mainPart.topModule.housePicture.housePics" />
-      <detail-infos name="描述" :top-infos="mainPart.topModule" />
+      <detail-infos name="描述" :ref="getSectionRef" :top-infos="mainPart.topModule" />
       <detail-facility name="设施" :ref="getSectionRef"
         :house-facility="mainPart.dynamicModule.facilityModule.houseFacility" />
       <detail-landlord name="房东" :ref="getSectionRef" :landlord="mainPart.dynamicModule.landlordModule" />
@@ -49,13 +49,28 @@ const { scrollTop } = useScroll(detailRef)
 const showTabControl = computed(() => {
   return scrollTop.value > 300
 })
-const names = ref(['描述', '设施', '房东'])
+const sectionEl = ref({})
+const names = computed(() => {
+  return Object.keys(sectionEl.value)
+})
 
-const tabClick = (index)=>{
-  // detailRef.value.scrollTo({
-  //   top: mainPart.value[index].offsetTop,
-  //   behavior: "smooth"
-  // })
+const getSectionRef = (value) => {
+  if(!value) return
+  const name = value.$el.getAttribute("name")
+  sectionEl.value[name] = value.$el
+}
+
+const tabClick = (index) => {
+  const key = Object.keys(sectionEl.value)[index]
+  const el = sectionEl.value[key]
+  let instance = el.offsetTop
+  if(index !== 0){
+    instance = instance - 44
+  }
+  detailRef.value.scrollTo({
+    top: instance,
+    behavior: "smooth"
+  })
 }
 
 </script>
@@ -63,7 +78,7 @@ const tabClick = (index)=>{
 <style lang="less" scoped>
 .tabs {
   position: fixed;
-  z-index: 9;
+  z-index: 10;
   left: 0;
   right: 0;
   top: 0;
