@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home" ref="homeRef">
     <home-nav-bar />
     <div class="banner">
       <img src="@/assets/img/home/banner.webp" alt="">
@@ -13,6 +13,9 @@
   </div>
 </template>
 
+<script>
+export default { name: "home" }
+</script>
 <script setup>
 import HomeNavBar from './cpns/home-nav-bar.vue'
 import HomeSearchBox from './cpns/home-search-box.vue'
@@ -20,7 +23,7 @@ import useHomeStore from '@/store/modules/home';
 import HomeCategories from './cpns/home-categories.vue'
 import homeContent from './cpns/home-content.vue';
 import useScroll from '@/utils/useScroll';
-import { watch, computed } from 'vue';
+import { watch, computed, ref, onActivated } from 'vue';
 import SearchBar from '@/components/search-bar/search-bar.vue';
 
 // 发送网络请求
@@ -35,7 +38,8 @@ homeStore.fetchHouseListData() // 房屋列表
 // })
 
 // 写法二
-const { isReachBottom, scrollTop } = useScroll()
+const homeRef = ref()
+const { isReachBottom, scrollTop } = useScroll(homeRef)
 watch(isReachBottom, (newValue) => {
   if (newValue) {
     homeStore.fetchHouseListData().then(() => {
@@ -49,11 +53,19 @@ const isShowSearchBar = computed(() => {
   return scrollTop.value >= 360
 })
 
+// 跳转回首页时，保留上一次滚动到的位置
+onActivated(() => {
+  homeRef.value?.scrollTo({ top: scrollTop.value })
+})
+
 </script>
 
 <style lang="less" scoped>
 .home {
   padding-bottom: 60px;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .banner {
@@ -61,7 +73,8 @@ const isShowSearchBar = computed(() => {
     width: 100%;
   }
 }
-.search-bar{
+
+.search-bar {
   position: fixed;
   z-index: 9;
   top: 0;

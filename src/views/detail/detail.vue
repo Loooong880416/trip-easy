@@ -1,6 +1,6 @@
 <template>
   <div class="detail top-page" ref="detailRef">
-    <tab-control v-if="showTabControl" class="tabs" :titles="names" @tabItemClick="tabClick" />
+    <tab-control v-if="showTabControl" class="tabs" ref="tabControlRef" :titles="names" @tabItemClick="tabClick" />
     <van-nav-bar title="房屋详情" left-text="旅途" left-arrow @click-left="$router.back()" />
     <div class="main" v-if="mainPart" v-memo="[mainPart]">
       <detail-swipe :swipe-data="mainPart.topModule.housePicture.housePics" />
@@ -20,7 +20,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import useDetailStore from '@/store/modules/detail'
 import { storeToRefs } from 'pinia';
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 import TabControl from "@/components/tab-control/tab-control.vue"
 import DetailSwipe from './cpns/detail_01_swipe.vue'
@@ -54,24 +54,54 @@ const names = computed(() => {
   return Object.keys(sectionEl.value)
 })
 
+
 const getSectionRef = (value) => {
-  if(!value) return
+  if (!value) return
   const name = value.$el.getAttribute("name")
   sectionEl.value[name] = value.$el
 }
 
+let isClick = false
+let currentDistance = -1
 const tabClick = (index) => {
   const key = Object.keys(sectionEl.value)[index]
   const el = sectionEl.value[key]
-  let instance = el.offsetTop
-  if(index !== 0){
-    instance = instance - 44
+  let distance = el.offsetTop
+  if (index !== 0) {
+    distance = distance - 44
   }
+  isClick = true
+  currentDistance = distance
+
   detailRef.value.scrollTo({
-    top: instance,
+    top: distance,
     behavior: "smooth"
   })
 }
+
+const tabControlRef = ref()
+// 滚动时监听页面匹配对于的tabcontrol的index
+watch(scrollTop, (newValue) => {
+  if(newValue === currentDistance){
+    isClick = false
+  }
+  if(isClick) return
+  // 获取所有区域的offsetTop
+  const values = Object.values(sectionEl.value).map(el => el.offsetTop)
+
+  // 根据newValue去匹配想要的索引
+  let index = values.length - 1
+  for (let i = 0; i < values.length; i++) {
+    if(values[i] > newValue + 44){
+      index = i - 1
+      break
+    }
+  }
+  if(tabControlRef.value){
+    tabControlRef.value.currentIndex = index
+  }
+})
+
 
 </script>
 
